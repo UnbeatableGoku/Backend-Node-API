@@ -1,12 +1,25 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const jsonwebtoken = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const userRoutes = require('./routes/user');
+const authRoutes = require('./routes/auth');
+const bankRoutes = require('./routes/bankRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
+// Connect to MongoDB database
+mongoose
+    .connect('mongodb://localhost:27017/kartblock', { useNewUrlParser: true })
+    .then(() => {
+        const app = express();
+        app.use(express.json());
 
-//import routes
-const categoryRouter = require('./routes/categoryRouter')
+        app.use('/api', userRoutes);
+        app.use('/api/bank', bankRoutes);
+        app.use('/api/category', categoryRoutes);
+        app.use('/auth', authRoutes);
 
-//middlewares
-app.use(express.json())
-app.use('/category', categoryRouter)
-
-module.exports = app
+        app.listen(5000, () => {
+            console.log('Server has started!');
+        });
+    })
+    .catch((err) => console.log('Failed to start', err));
