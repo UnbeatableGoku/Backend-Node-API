@@ -1,58 +1,95 @@
-const category = require('../models/categorySchema')
+const Category = require('../models/categoryModel');
 
-exports.getAllCategory = async(req, res) => {
+exports.getAllCategory = async (req, res) => {
     try {
-        const allCategory = await category.find()
-        res.json({
-            allCategory
-        })
-    } catch (err) {
-        res.json({
-            status: 'fail',
-        })
-    }
-}
-
-exports.postCategory = async(req, res) => {
-    try {
-        const newCategory = await category.create(req.body)
-        res.json({
-            newCategory
-        })
+        const allCategory = await Category.find();
+        if (allCategory.length !== 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'All categories',
+                statusCode: 200,
+                data: allCategory
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: 'No categories found',
+                statusCode: 400
+            });
+        }
     } catch (error) {
         res.json({
-            status: 'fail'
+            success: 'fail',
+            message: error.message
         });
     }
-}
-exports.updateCategory = async(req, res) => {
+};
+
+exports.addCategory = async (req, res) => {
     try {
-        const updateCategory = await category.findByIdAndUpdate(req.params.id, req.body, {
+        const { title, image, is_active, other_description } = req.body;
+
+        if (!(title && image && is_active.toString())) {
+            return res.status(400).json({
+                success: false,
+                message: 'all fields required',
+                statusCode: 400
+            });
+        }
+
+        const newCategory = await Category({
+            title,
+            image,
+            is_active,
+            other_description
+        });
+        newCategory.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Successfully added new category',
+            statusCode: 200,
+            data: newCategory
+        });
+    } catch (error) {
+        res.json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+exports.updateCategory = async (req, res) => {
+    try {
+        const updateCategory = await Category.findByIdAndUpdate(req.params.id, req.body, {
             new: true
-        })
-        res.json({
-            newData: {
-                updateCategory
-            }
-        })
-
+        });
+        return res.status(200).json({
+            success: true,
+            message: 'Successfully updated ' + updateCategory.title + ' category',
+            statusCode: 200,
+            data: updateCategory
+        });
     } catch (error) {
         res.json({
-            status: 'fail',
-            error
+            success: false,
+            message: error.message
         });
     }
-}
-exports.deleteCategory = async(req, res) => {
+};
+exports.deleteCategory = async (req, res) => {
     try {
-        const deleteCategory = await category.findByIdAndDelete(req.params.id)
-        res.json({
-            status: "pass"
-        })
+        const deleteCategory = await Category.findByIdAndDelete(req.params.id);
+        return res.status(200).json({
+            success: true,
+            message: 'Successfully deleted ' + deleteCategory.title + ' category',
+            statusCode: 200,
+            data: deleteCategory
+        });
     } catch (error) {
         res.json({
-            status: 'fail',
-            error
+            success: false,
+            message: error.message
         });
     }
-}
+};
