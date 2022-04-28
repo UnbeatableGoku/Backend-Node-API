@@ -17,7 +17,7 @@ const Bank = mongoose.model('bank', bankSchema);
 
 const CardSchema = new mongoose.Schema({
     card_name: { type: String, require: true },
-    bank: [{ type: mongoose.Schema.Types.ObjectId, ref: "bank" }]
+    bank: { type: mongoose.Schema.Types.ObjectId, ref: "bank" }
 })
 
 const Card = mongoose.model('Card', CardSchema);
