@@ -7,7 +7,6 @@ const {
     getCard
 } = require('../controllers/bankCardController');
 
-router.get('/', getAll)
 router.post('/', addCard)
 router.get('/:id', getCard)
 
