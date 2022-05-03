@@ -1,4 +1,5 @@
 const Category = require('../models/categoryModel');
+const { imageUploader } = require('../utils/imageUploader');
 
 exports.getAllCategory = async (req, res) => {
     try {
@@ -37,9 +38,11 @@ exports.addCategory = async (req, res) => {
             });
         }
 
+        let imagePath = await imageUploader('category', title, image);
+
         const newCategory = await Category({
             title,
-            image,
+            image: imagePath,
             is_active,
             other_description
         });
@@ -64,6 +67,7 @@ exports.updateCategory = async (req, res) => {
         const updateCategory = await Category.findByIdAndUpdate(req.params.id, req.body, {
             new: true
         });
+
         return res.status(200).json({
             success: true,
             message: 'Successfully updated ' + updateCategory.title + ' category',

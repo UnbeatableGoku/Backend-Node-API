@@ -1,4 +1,5 @@
 const Bank = require('../models/bankModel');
+const { imageUploader } = require('../utils/imageUploader');
 
 exports.getAllBanks = async (req, res) => {
     try {
@@ -54,11 +55,11 @@ exports.addBank = async (req, res) => {
                 message: 'Some fields are missing',
                 statusCode: 400
             });
-
+        const imagePath = await imageUploader('bank', bank_name, bank_logo);
         const bank = await Bank({
             bank_ifsc_code,
             bank_name,
-            bank_logo,
+            bank_logo: imagePath,
             bank_city,
             bank_country,
             bank_state,
@@ -118,7 +119,7 @@ exports.updateBank = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'Bank ' + updatedBank.bank_name + ' successfully updated',
-            statusCode: 400,
+            statusCode: 200,
             data: updatedBank
         });
     } catch (error) {
